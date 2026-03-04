@@ -83,6 +83,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font
 .tlbtn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
 
 .chart-wrap{position:relative;height:180px;margin-bottom:4px;}
+.chart-inner canvas{transition:opacity .18s ease;}
+.chart-inner canvas.loading{opacity:0.3;}
 .y-labels{position:absolute;left:0;top:0;bottom:0;width:50px;display:flex;flex-direction:column;justify-content:space-between;font-size:10px;color:var(--sub);pointer-events:none;}
 .chart-inner{position:absolute;left:54px;right:0;top:0;bottom:0;}
 .chart-inner canvas{width:100%;height:100%;display:block;}
@@ -101,7 +103,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font
 .info-close{background:none;border:none;color:var(--bg);opacity:.6;font-size:14px;cursor:pointer;}
 .info-body{font-size:13px;line-height:1.5;opacity:.85;}
 
-/* STARRED BANNER */
+
 
 /* PROJECTOR */
 .proj-header{margin-bottom:14px;}
@@ -258,6 +260,44 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
       <!-- HOME PAGE -->
       <div class="page" id="page0">
 
+        <!-- Projector card -->
+        <div class="card">
+          <div class="proj-header">
+            <div class="proj-label">This Week's Dip Investment</div>
+            <div class="proj-title">What will this week's investment be worth?</div>
+            <div class="proj-price-ctx" id="projPriceCtx" style="display:none;margin-top:6px;font-size:12px;color:var(--sub)"></div>
+          </div>
+          <div class="proj-input-row">
+            <span class="proj-currency">$</span>
+            <input type="number" class="proj-input" id="projAmt" placeholder="0" min="0" step="10">
+            <span class="proj-week">this week</span>
+          </div>
+          <div class="yr-toggle">
+            <button class="yr-btn on" id="yr10">10 years</button>
+            <button class="yr-btn" id="yr50">50 years</button>
+          </div>
+          <div class="proj-result" id="projResult" style="display:none">
+            <div class="proj-row">
+              <div class="proj-block">
+                <div class="proj-rl">You invest</div>
+                <div class="proj-rv neutral" id="projIn"></div>
+              </div>
+              <div class="proj-arrow">&#8594;</div>
+              <div class="proj-block">
+                <div class="proj-rl" id="projYrLabel">Worth in 10 yrs</div>
+                <div class="proj-rv green" id="projOut"></div>
+              </div>
+            </div>
+            <div class="proj-gain-row">
+              <span class="proj-gain-label">Projected gain</span>
+              <span class="proj-gain-val" id="projGain"></span>
+            </div>
+            <div class="proj-last-week" id="projLastWeek" style="display:none;background:rgba(52,199,89,.08);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--sub);line-height:1.5;"></div>
+            <div class="proj-disc">Based on S&amp;P 500 avg ~10.5%/yr compounded. Past performance doesn't guarantee future results.</div>
+          </div>
+          <div class="proj-empty" id="projEmpty">Enter this week's investment amount above &#8593;</div>
+        </div>
+
         <!-- Hero chart card -->
         <div class="card" style="position:relative;" id="heroCard">
           <div class="hero-meta">
@@ -318,44 +358,6 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
             <div class="legend-dot" style="background:var(--green)"></div>
             <span id="legendText">Inverted price &#8212; peaks = best buying moments</span>
           </div>
-        </div>
-
-        <!-- Projector card -->
-        <div class="card">
-          <div class="proj-header">
-            <div class="proj-label">This Week's Dip Investment</div>
-            <div class="proj-title">What will this week's investment be worth?</div>
-            <div class="proj-price-ctx" id="projPriceCtx" style="display:none;margin-top:6px;font-size:12px;color:var(--sub)"></div>
-          </div>
-          <div class="proj-input-row">
-            <span class="proj-currency">$</span>
-            <input type="number" class="proj-input" id="projAmt" placeholder="0" min="0" step="10">
-            <span class="proj-week">this week</span>
-          </div>
-          <div class="yr-toggle">
-            <button class="yr-btn on" id="yr10">10 years</button>
-            <button class="yr-btn" id="yr50">50 years</button>
-          </div>
-          <div class="proj-result" id="projResult" style="display:none">
-            <div class="proj-row">
-              <div class="proj-block">
-                <div class="proj-rl">You invest</div>
-                <div class="proj-rv neutral" id="projIn"></div>
-              </div>
-              <div class="proj-arrow">&#8594;</div>
-              <div class="proj-block">
-                <div class="proj-rl" id="projYrLabel">Worth in 10 yrs</div>
-                <div class="proj-rv green" id="projOut"></div>
-              </div>
-            </div>
-            <div class="proj-gain-row">
-              <span class="proj-gain-label">Projected gain</span>
-              <span class="proj-gain-val" id="projGain"></span>
-            </div>
-            <div class="proj-last-week" id="projLastWeek" style="display:none;background:rgba(52,199,89,.08);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--sub);line-height:1.5;"></div>
-            <div class="proj-disc">Based on S&amp;P 500 avg ~10.5%/yr compounded. Past performance doesn't guarantee future results.</div>
-          </div>
-          <div class="proj-empty" id="projEmpty">Enter this week's investment amount above &#8593;</div>
         </div>
 
         <!-- Markets section removed - moved to Stocks & ETFs tab -->
@@ -515,28 +517,25 @@ function saveWL() { try { localStorage.setItem('db_wl', JSON.stringify(state.wat
 function saveStar() { try { localStorage.setItem('db_star', JSON.stringify(state.starred)); } catch(e){} }
 function saveDark() { try { localStorage.setItem('db_dark', state.dark); } catch(e){} }
 
-// Yahoo Finance via CORS proxy — no API key needed
-// allorigins is a free, reliable CORS proxy
+// Yahoo Finance proxy — no API key needed
 const YF_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
-const YF_SEARCH = 'https://query2.finance.yahoo.com/v1/finance/search';
-const PROXY = 'https://api.allorigins.win/get?url=';
+const YF_SEARCH = 'https://query1.finance.yahoo.com/v1/finance/search';
 
-// Yahoo symbols: indices need ^ prefix (URL encoded)
+// Yahoo symbols: indices need a prefix
 function toYFSymbol(symbol) {
   const map = { GSPC: '%5EGSPC', DJI: '%5EDJI', IXIC: '%5EIXIC' };
-  return map[symbol] || encodeURIComponent(symbol);
+  return map[symbol] || symbol;
 }
 
-// Timeframe → Yahoo interval + range
-// Using daily intervals for all ranges so we always get enough data points
+// Timeframe → Yahoo interval + range params
 function tlToYF(tl) {
   return {
     '1D': { interval: '5m',  range: '1d'  },
     '1W': { interval: '60m', range: '5d'  },
     '1M': { interval: '1d',  range: '1mo' },
     '3M': { interval: '1d',  range: '3mo' },
-    '6M': { interval: '1d',  range: '6mo' },
-    '1Y': { interval: '1d',  range: '1y'  },
+    '6M': { interval: '1wk', range: '6mo' },
+    '1Y': { interval: '1wk', range: '1y'  },
   }[tl] || { interval: '1d', range: '1mo' };
 }
 
@@ -574,12 +573,9 @@ async function fetchYahoo(symbol, tl) {
   if (cached) return cached;
 
   try {
-    const yfUrl = `${YF_BASE}/${yfSym}?interval=${interval}&range=${range}&includePrePost=false`;
-    const proxyUrl = `${PROXY}${encodeURIComponent(yfUrl)}`;
-    const r = await fetch(proxyUrl);
-    const wrapper = await r.json();
-    // allorigins wraps the response in { contents: "..." }
-    const d = JSON.parse(wrapper.contents);
+    const url = `${YF_BASE}/${yfSym}?interval=${interval}&range=${range}&includePrePost=false`;
+    const r = await fetch(url);
+    const d = await r.json();
     const result = d?.chart?.result?.[0];
     if (!result) throw new Error('no data');
 
@@ -587,15 +583,13 @@ async function fetchYahoo(symbol, tl) {
     const timestamps = result.timestamp || [];
     const closes = result.indicators?.quote?.[0]?.close || [];
 
-    // Build graph points, filtering nulls (market closed gaps)
+    // Build graph points
     const graph = timestamps.map((ts, i) => ({
       date: new Date(ts * 1000).toISOString().split('T')[0],
       price: closes[i] ?? null,
     })).filter(p => p.price !== null && !isNaN(p.price));
 
-    if (!graph.length) throw new Error('empty graph');
-
-    // Current price from meta, 52-week high always from meta field
+    // Current price and 52-week high from meta
     const current = meta.regularMarketPrice || meta.previousClose || graph[graph.length-1]?.price;
     const peak = meta.fiftyTwoWeekHigh || Math.max(...graph.map(p => p.price));
 
@@ -799,32 +793,48 @@ function drawMini(canvas, yId, xId, data) {
 }
 
 // \u2500\u2500 HERO CHART \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-async function renderHero() {
-  const sym = state.hero.symbol;
-  const tl = state.hero.tl;
-  const mode = state.hero.mode;
-
-  const mdata = await fetchMarket(sym);
-  const gdata = await fetchGraph(sym, tl);
-  state.hero.data = mdata;
-  state.hero.graph = gdata;
-
-  // Refresh projector if it has a value entered
-  if (document.getElementById('projAmt')?.value) updateProj();
-
+let heroDebounceTimer = null;
+function applyHeroRender(mdata, gdata, mode) {
   const opp = calcOpp(mdata.current, mdata.peak);
   document.getElementById('heroBadge').textContent = `+${opp.toFixed(1)}%`;
-
   const ml = MODE_LABELS[mode];
   document.getElementById('heroLabel').textContent = ml.label;
   document.getElementById('modeTagIcon').textContent = ml.tag;
   document.getElementById('modeTagText').textContent = ml.tag2;
   document.getElementById('legendText').textContent = ml.legend;
-
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     const canvas = document.getElementById('heroCanvas');
-    if (canvas) drawChart(canvas, gdata, mode, mdata, true);
-  }, 0);
+    if (canvas) { canvas.classList.remove('loading'); drawChart(canvas, gdata, mode, mdata, true); }
+  });
+  if (document.getElementById('projAmt')?.value) updateProj();
+}
+
+async function renderHero() {
+  const sym = state.hero.symbol;
+  const tl = state.hero.tl;
+  const mode = state.hero.mode;
+
+  // Serve from cache instantly — mode changes need no network call
+  const cacheKey = `${sym}_${tl}`;
+  const cached = getCache(cacheKey);
+  if (cached) {
+    state.hero.data = cached.market;
+    state.hero.graph = cached.graph;
+    applyHeroRender(cached.market, cached.graph, mode);
+    return;
+  }
+
+  // No cache — dim canvas and debounce the fetch so rapid clicks don't stack
+  const canvas = document.getElementById('heroCanvas');
+  if (canvas) canvas.classList.add('loading');
+  clearTimeout(heroDebounceTimer);
+  heroDebounceTimer = setTimeout(async () => {
+    const mdata = await fetchMarket(sym);
+    const gdata = await fetchGraph(sym, tl);
+    state.hero.data = mdata;
+    state.hero.graph = gdata;
+    applyHeroRender(mdata, gdata, mode);
+  }, 80);
 }
 
 // \u2500\u2500 MARKETS GRID \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
@@ -1059,10 +1069,9 @@ async function doSearch(q) {
   if (!q) { document.getElementById('searchResults').innerHTML=''; return; }
   document.getElementById('searchResults').innerHTML = '<div class="sr-msg">Searching...</div>';
   try {
-    const yfUrl = `${YF_SEARCH}?q=${encodeURIComponent(q)}&quotesCount=10&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
-    const r = await fetch(`${PROXY}${encodeURIComponent(yfUrl)}`);
-    const wrapper = await r.json();
-    const d = JSON.parse(wrapper.contents);
+    const url = `${YF_SEARCH}?q=${encodeURIComponent(q)}&quotesCount=10&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
+    const r = await fetch(url);
+    const d = await r.json();
     const quotes = d?.finance?.result?.[0]?.quotes || [];
     if (!quotes.length) throw new Error('no results');
     renderSearchResults(quotes.map(m => ({
@@ -1137,7 +1146,6 @@ function applyStarHero() {
     return;
   }
 
-  // Build dropdown from starred items
   const opts = state.starred.map(s => `<option value="${s.symbol}">${s.name}</option>`).join('');
   if (row) row.innerHTML = `
     <select class="hero-sym-sel" id="heroSymSel">${opts}</select>
@@ -1229,7 +1237,6 @@ function bindEvents() {
     saveDark(); renderHero();
   });
 
-
   // Card grid events (delegated) - both grids are on the stocks tab now
   document.getElementById('marketsGrid').addEventListener('click', handleCardClick.bind(null, false));
   document.getElementById('stocksGrid').addEventListener('click', handleCardClick.bind(null, true));
@@ -1292,16 +1299,45 @@ function handleCardClick(inStocks, e) {
     if (!msym) return;
     state.cardTimelines[msym] = tl;
 
-    // Replace just that card
+    // Update active button immediately
+    tlRow.querySelectorAll('.tlbtn').forEach(b => b.classList.toggle('on', b.dataset.tl === tl));
+
+    // Find the card and redraw just the mini chart
     const markets = isStocks ? state.watchlist : DEFAULT_MARKETS;
-    const market = markets.find(m=>m.symbol===msym);
+    const market = markets.find(m => m.symbol === msym);
     if (!market) return;
-    const grid = document.getElementById(isStocks?'stocksGrid':'marketsGrid');
-    const cards = grid.querySelectorAll('.mcard');
-    const idx = markets.indexOf(market);
-    if (cards[idx]) {
-      buildCard(market, isStocks).then(newCard => grid.replaceChild(newCard, cards[idx]));
-    }
+    const sfx = isStocks ? 's' : 'h';
+    const uid = `${msym}-${sfx}`;
+    const miniCanvas = document.getElementById(`mc-${uid}`);
+
+    // Dim while loading
+    if (miniCanvas) miniCanvas.style.opacity = '0.3';
+
+    fetchGraph(msym, tl).then(gdata => {
+      requestAnimationFrame(() => {
+        if (miniCanvas) {
+          miniCanvas.style.opacity = '';
+          drawMini(miniCanvas, `my-${uid}`, `mx-${uid}`, gdata);
+        }
+        // Update stat badge in-place
+        const card = miniCanvas?.closest('.mcard');
+        if (card) {
+          const mdata = state.memCache[`${msym}_1M`]?.data?.market;
+          const badge = card.querySelector('.stat-badge');
+          const newBadge = calcStatBadge(gdata, mdata?.current, tl);
+          if (badge) badge.remove();
+          if (newBadge) {
+            const priceEl = card.querySelector('.mcard-price');
+            if (priceEl) {
+              const el = document.createElement('div');
+              el.className = `stat-badge ${newBadge.pos ? 'pos' : 'neg'}`;
+              el.textContent = newBadge.text;
+              priceEl.after(el);
+            }
+          }
+        }
+      });
+    });
   }
 }
 
