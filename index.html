@@ -102,10 +102,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font
 .info-body{font-size:13px;line-height:1.5;opacity:.85;}
 
 /* STARRED BANNER */
-.star-banner{display:none;align-items:center;gap:6px;margin:0 16px 8px;padding:8px 12px;background:rgba(255,214,10,.12);border-radius:8px;font-size:12px;color:var(--sub);}
-.star-banner.on{display:flex;}
-.star-banner strong{color:var(--text);}
-.star-banner .reset{margin-left:auto;cursor:pointer;font-size:12px;color:var(--accent);}
 
 /* PROJECTOR */
 .proj-header{margin-bottom:14px;}
@@ -261,13 +257,6 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
 
       <!-- HOME PAGE -->
       <div class="page" id="page0">
-
-        <!-- Star banner -->
-        <div class="star-banner" id="starBanner">
-          <span>&#11088;</span>
-          <span id="starBannerNames">items</span> <span>on hero chart</span>
-          <span class="reset" id="starReset">Reset all</span>
-        </div>
 
         <!-- Hero chart card -->
         <div class="card" style="position:relative;" id="heroCard">
@@ -526,25 +515,28 @@ function saveWL() { try { localStorage.setItem('db_wl', JSON.stringify(state.wat
 function saveStar() { try { localStorage.setItem('db_star', JSON.stringify(state.starred)); } catch(e){} }
 function saveDark() { try { localStorage.setItem('db_dark', state.dark); } catch(e){} }
 
-// Yahoo Finance proxy — no API key needed
+// Yahoo Finance via CORS proxy — no API key needed
+// allorigins is a free, reliable CORS proxy
 const YF_BASE = 'https://query1.finance.yahoo.com/v8/finance/chart';
-const YF_SEARCH = 'https://query1.finance.yahoo.com/v1/finance/search';
+const YF_SEARCH = 'https://query2.finance.yahoo.com/v1/finance/search';
+const PROXY = 'https://api.allorigins.win/get?url=';
 
-// Yahoo symbols: indices need a prefix
+// Yahoo symbols: indices need ^ prefix (URL encoded)
 function toYFSymbol(symbol) {
   const map = { GSPC: '%5EGSPC', DJI: '%5EDJI', IXIC: '%5EIXIC' };
-  return map[symbol] || symbol;
+  return map[symbol] || encodeURIComponent(symbol);
 }
 
-// Timeframe → Yahoo interval + range params
+// Timeframe → Yahoo interval + range
+// Using daily intervals for all ranges so we always get enough data points
 function tlToYF(tl) {
   return {
     '1D': { interval: '5m',  range: '1d'  },
     '1W': { interval: '60m', range: '5d'  },
     '1M': { interval: '1d',  range: '1mo' },
     '3M': { interval: '1d',  range: '3mo' },
-    '6M': { interval: '1wk', range: '6mo' },
-    '1Y': { interval: '1wk', range: '1y'  },
+    '6M': { interval: '1d',  range: '6mo' },
+    '1Y': { interval: '1d',  range: '1y'  },
   }[tl] || { interval: '1d', range: '1mo' };
 }
 
@@ -582,9 +574,12 @@ async function fetchYahoo(symbol, tl) {
   if (cached) return cached;
 
   try {
-    const url = `${YF_BASE}/${yfSym}?interval=${interval}&range=${range}&includePrePost=false`;
-    const r = await fetch(url);
-    const d = await r.json();
+    const yfUrl = `${YF_BASE}/${yfSym}?interval=${interval}&range=${range}&includePrePost=false`;
+    const proxyUrl = `${PROXY}${encodeURIComponent(yfUrl)}`;
+    const r = await fetch(proxyUrl);
+    const wrapper = await r.json();
+    // allorigins wraps the response in { contents: "..." }
+    const d = JSON.parse(wrapper.contents);
     const result = d?.chart?.result?.[0];
     if (!result) throw new Error('no data');
 
@@ -592,13 +587,15 @@ async function fetchYahoo(symbol, tl) {
     const timestamps = result.timestamp || [];
     const closes = result.indicators?.quote?.[0]?.close || [];
 
-    // Build graph points
+    // Build graph points, filtering nulls (market closed gaps)
     const graph = timestamps.map((ts, i) => ({
       date: new Date(ts * 1000).toISOString().split('T')[0],
       price: closes[i] ?? null,
     })).filter(p => p.price !== null && !isNaN(p.price));
 
-    // Current price and 52-week high from meta
+    if (!graph.length) throw new Error('empty graph');
+
+    // Current price from meta, 52-week high always from meta field
     const current = meta.regularMarketPrice || meta.previousClose || graph[graph.length-1]?.price;
     const peak = meta.fiftyTwoWeekHigh || Math.max(...graph.map(p => p.price));
 
@@ -1062,9 +1059,10 @@ async function doSearch(q) {
   if (!q) { document.getElementById('searchResults').innerHTML=''; return; }
   document.getElementById('searchResults').innerHTML = '<div class="sr-msg">Searching...</div>';
   try {
-    const url = `${YF_SEARCH}?q=${encodeURIComponent(q)}&quotesCount=10&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
-    const r = await fetch(url);
-    const d = await r.json();
+    const yfUrl = `${YF_SEARCH}?q=${encodeURIComponent(q)}&quotesCount=10&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
+    const r = await fetch(`${PROXY}${encodeURIComponent(yfUrl)}`);
+    const wrapper = await r.json();
+    const d = JSON.parse(wrapper.contents);
     const quotes = d?.finance?.result?.[0]?.quotes || [];
     if (!quotes.length) throw new Error('no results');
     renderSearchResults(quotes.map(m => ({
@@ -1123,10 +1121,8 @@ function clearAllStars() {
 }
 
 function applyStarHero() {
-  const banner = document.getElementById('starBanner');
   const row = document.getElementById('heroSymRow');
   if (!state.starred.length) {
-    // Restore default dropdown
     if (row) row.innerHTML = `
       <select class="hero-sym-sel" id="heroSymSel">
         <option value="GSPC">S&amp;P 500</option>
@@ -1136,7 +1132,6 @@ function applyStarHero() {
       <span style="font-size:14px;color:var(--sub)">\u25BE</span>
     `;
     document.getElementById('heroSymSel')?.addEventListener('change', e => { state.hero.symbol = e.target.value; renderHero(); });
-    banner.classList.remove('on');
     state.hero.symbol = 'GSPC';
     renderHero();
     return;
@@ -1150,12 +1145,6 @@ function applyStarHero() {
   `;
   document.getElementById('heroSymSel')?.addEventListener('change', e => { state.hero.symbol = e.target.value; renderHero(); });
 
-  // Update banner
-  const names = state.starred.map(s => s.name).join(', ');
-  document.getElementById('starBannerNames').innerHTML = `<strong>${names}</strong>`;
-  banner.classList.add('on');
-
-  // Set hero to first starred if current hero isn't starred
   if (!state.starred.some(s => s.symbol === state.hero.symbol)) {
     state.hero.symbol = state.starred[0].symbol;
   }
@@ -1240,8 +1229,6 @@ function bindEvents() {
     saveDark(); renderHero();
   });
 
-  // Star banner reset
-  document.getElementById('starReset').addEventListener('click', clearAllStars);
 
   // Card grid events (delegated) - both grids are on the stocks tab now
   document.getElementById('marketsGrid').addEventListener('click', handleCardClick.bind(null, false));
