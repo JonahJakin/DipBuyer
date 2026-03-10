@@ -258,6 +258,47 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
       <!-- HOME PAGE -->
       <div class="page" id="page0">
 
+        <!-- Projector card -->
+        <div class="card">
+          <div class="proj-header">
+            <div class="proj-label">This Week's Dip Investment</div>
+            <div class="proj-title">What will this week's investment be worth?</div>
+            <div class="proj-price-ctx" id="projPriceCtx" style="display:none;margin-top:6px;font-size:12px;color:var(--sub)"></div>
+          </div>
+          <div class="proj-input-row">
+            <span class="proj-currency">$</span>
+            <input type="number" class="proj-input" id="projAmt" placeholder="0" min="0" step="10">
+            <span class="proj-week">this week</span>
+          </div>
+          <div class="yr-toggle">
+            <button class="yr-btn on" id="yr10">10 years</button>
+            <button class="yr-btn" id="yr50">50 years</button>
+          </div>
+          <div class="proj-result" id="projResult" style="display:none">
+            <div class="proj-row">
+              <div class="proj-block">
+                <div class="proj-rl">You invest</div>
+                <div class="proj-rv neutral" id="projIn"></div>
+              </div>
+              <div class="proj-arrow">&#8594;</div>
+              <div class="proj-block">
+                <div class="proj-rl" id="projYrLabel">Worth in 10 yrs</div>
+                <div class="proj-rv green" id="projOut"></div>
+              </div>
+            </div>
+            <div class="proj-gain-row">
+              <span class="proj-gain-label">Projected gain</span>
+              <span class="proj-gain-val" id="projGain"></span>
+            </div>
+            <div class="proj-last-week" id="projLastWeek" style="display:none;background:rgba(52,199,89,.08);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--sub);line-height:1.5;"></div>
+            <div class="proj-disc">Based on S&amp;P 500 avg ~10.5%/yr compounded. Past performance doesn't guarantee future results.</div>
+          </div>
+          <div class="proj-empty" id="projEmpty">Enter this week's investment amount above &#8593;</div>
+        </div>
+
+        <!-- Markets section removed - moved to Stocks & ETFs tab -->
+
+
         <!-- Hero chart card -->
         <div class="card" style="position:relative;" id="heroCard">
           <div class="hero-meta">
@@ -320,47 +361,7 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
           </div>
         </div>
 
-        <!-- Projector card -->
-        <div class="card">
-          <div class="proj-header">
-            <div class="proj-label">This Week's Dip Investment</div>
-            <div class="proj-title">What will this week's investment be worth?</div>
-            <div class="proj-price-ctx" id="projPriceCtx" style="display:none;margin-top:6px;font-size:12px;color:var(--sub)"></div>
-          </div>
-          <div class="proj-input-row">
-            <span class="proj-currency">$</span>
-            <input type="number" class="proj-input" id="projAmt" placeholder="0" min="0" step="10">
-            <span class="proj-week">this week</span>
-          </div>
-          <div class="yr-toggle">
-            <button class="yr-btn on" id="yr10">10 years</button>
-            <button class="yr-btn" id="yr50">50 years</button>
-          </div>
-          <div class="proj-result" id="projResult" style="display:none">
-            <div class="proj-row">
-              <div class="proj-block">
-                <div class="proj-rl">You invest</div>
-                <div class="proj-rv neutral" id="projIn"></div>
-              </div>
-              <div class="proj-arrow">&#8594;</div>
-              <div class="proj-block">
-                <div class="proj-rl" id="projYrLabel">Worth in 10 yrs</div>
-                <div class="proj-rv green" id="projOut"></div>
-              </div>
-            </div>
-            <div class="proj-gain-row">
-              <span class="proj-gain-label">Projected gain</span>
-              <span class="proj-gain-val" id="projGain"></span>
-            </div>
-            <div class="proj-last-week" id="projLastWeek" style="display:none;background:rgba(52,199,89,.08);border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--sub);line-height:1.5;"></div>
-            <div class="proj-disc">Based on S&amp;P 500 avg ~10.5%/yr compounded. Past performance doesn't guarantee future results.</div>
-          </div>
-          <div class="proj-empty" id="projEmpty">Enter this week's investment amount above &#8593;</div>
-        </div>
-
-        <!-- Markets section removed - moved to Stocks & ETFs tab -->
-
-      </div><!-- end home -->
+        <!-- end home -->
 
       <!-- STOCKS PAGE -->
       <div class="page" id="page1">
