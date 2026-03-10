@@ -242,14 +242,14 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
 <div class="app">
 
   <header class="header">
-    <button class="hbtn" id="settingsBtn">&#9881;&#65039;</button>
+    <button class="hbtn" id="settingsBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     <div class="logo">DipBuyer</div>
     <button class="hbtn add" id="addBtn">+</button>
   </header>
 
   <div class="tabbar">
     <button class="tabbt on" id="tab0">Home</button>
-    <button class="tabbt" id="tab1">Stocks &amp; ETFs</button>
+    <button class="tabbt" id="tab1">Stocks / Markets</button>
   </div>
 
   <div class="viewport">
@@ -296,7 +296,7 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
           <div class="proj-empty" id="projEmpty">Enter this week's investment amount above &#8593;</div>
         </div>
 
-        <!-- Markets section removed - moved to Stocks & ETFs tab -->
+        <!-- Markets section removed - moved to Stocks / Markets tab -->
 
 
         <!-- Hero chart card -->
@@ -320,9 +320,8 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
             <span class="mode-label">View:</span>
             <div class="mode-sel-wrap">
               <select class="mode-sel" id="modeSel">
-                <option value="inverted">&#128200; Inverted (Opportunity)</option>
-                <option value="score">&#11088; Opportunity Score</option>
-                <option value="standard">&#128202; Standard View (not recommended)</option>
+                <option value="inverted">Inverted (Opportunity)</option>
+                <option value="standard">Standard View (not recommended)</option>
               </select>
             </div>
             <button class="info-btn" id="infoBtn">?</button>
@@ -365,14 +364,11 @@ input:checked+.toggle-slider::before{transform:translateX(20px);}
 
       <!-- STOCKS PAGE -->
       <div class="page" id="page1">
-        <div class="section-title" style="padding-top:8px">Markets</div>
-        <div id="marketsGrid"></div>
-        <div class="section-title">Stocks &amp; ETFs</div>
+        <div class="section-title">Stocks / Markets</div>
         <div id="stocksGrid"></div>
         <div class="empty-stocks" id="stocksEmpty">
-          <div class="empty-icon">&#128200;</div>
           <div class="empty-title">No stocks yet</div>
-          <div class="empty-body">Tap <strong>+</strong> to search and add stocks or ETFs. Star any item to feature it on the Home chart.</div>
+          <div class="empty-body">Tap <strong>+</strong> to search and add stocks or markets. Star any item to feature it on the Home chart.</div>
         </div>
       </div>
 
@@ -497,14 +493,12 @@ const HIST = {
 
 const INFO = {
   inverted: { title:'\u{1F4C8} Inverted Chart', body:"This chart flips the price upside down. When the market drops, this line goes UP \u2014 turning scary dips into visible buying peaks. Higher = better buying opportunity right now." },
-  score:    { title:'\u2B50 Opportunity Score', body:"A 0\u2013100 score that rises as the market falls further from its peak. Above 50 signals a meaningful buying opportunity. 100 = deepest dip." },
-  standard: { title:'\u{1F4CA} Standard View', body:"This is the normal price chart. Dips look scary here \u2014 which is exactly why we don't recommend it. When prices fall, this line falls too, which can trigger panic selling. The other views reframe the same data more constructively." },
+    standard: { title:'\u{1F4CA} Standard View', body:"This is the normal price chart. Dips look scary here \u2014 which is exactly why we don't recommend it. When prices fall, this line falls too, which can trigger panic selling. The other views reframe the same data more constructively." },
 };
 
 const MODE_LABELS = {
   inverted: { label:'Inverted Opportunity View', tag:'\u2191', tag2:'Higher = Better Buying Opportunity', legend:'Inverted price \u2014 peaks = best buying moments' },
-  score:    { label:'Opportunity Score View', tag:'\u2B50', tag2:'Composite opportunity score (0\u2013100)', legend:'Opportunity score \u2014 peaks = best buying moments' },
-  standard: { label:'Standard View', tag:'\u26A0\uFE0F', tag2:'Normal price chart \u2014 dips look scary here', legend:'Standard view \u2014 consider switching to Inverted view' },
+  standard: { label:'Standard View', tag:'!', tag2:'Normal price chart \u2014 dips look scary here', legend:'Standard view \u2014 consider switching to Inverted view' },
 };
 
 function loadLS() {
@@ -857,14 +851,7 @@ async function renderHero() {
 }
 
 // \u2500\u2500 MARKETS GRID \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-async function renderMarkets() {
-  const grid = document.getElementById('marketsGrid');
-  grid.innerHTML = '';
-  for (const m of DEFAULT_MARKETS) {
-    const card = await buildCard(m, false);
-    grid.appendChild(card);
-  }
-}
+async function renderMarkets() {}
 
 async function renderStocks() {
   const grid = document.getElementById('stocksGrid');
@@ -898,11 +885,11 @@ async function buildCard(market, inStocks) {
       <div class="mcard-header">
         <div class="mcard-name">${market.name}</div>
         <div class="mcard-actions">
-          <button class="star-btn${isStarred?' on':''}" data-sym="${market.symbol}" data-name="${market.name}">${isStarred?'\u2B50':'\u2606'}</button>
+          <button class="star-btn${isStarred?' on':''}" data-sym="${market.symbol}" data-name="${market.name}">${isStarred?'★':'☆'}</button>
           <div class="menu-wrap">
             <button class="menu-btn" data-uid="${uid}">\u22EE</button>
             <div class="menu-drop" id="drop-${uid}">
-              ${!isDefault ? `<div class="menu-item danger" data-action="remove" data-sym="${market.symbol}">Remove</div>` : ''}
+              <div class="menu-item danger" data-action="remove" data-sym="${market.symbol}">Remove from Home</div>
               <div class="menu-item" data-action="refresh" data-sym="${market.symbol}" data-instocks="${inStocks}">Refresh Data</div>
             </div>
           </div>
@@ -983,7 +970,7 @@ async function openDetail(symbol, name, mdata) {
   document.getElementById('dStats').innerHTML = [
     {label:'% from 52-wk high', val:`${fromHigh.toFixed(1)}% discount`, pos:true},
     {label:'Opportunity Score', val:`${score}/100`, pos:score>50},
-    {label:'Cheapest in 1Y', val: Math.abs(mdata.current-vMin)<vMin*.01?'\u2713 Yes':`+${(((mdata.current-vMin)/vMin)*100).toFixed(1)}% above`, pos: Math.abs(mdata.current-vMin)<vMin*.01},
+    {label:'Cheapest in 1Y', val: Math.abs(mdata.current-vMin)<vMin*.01?'Yes':`+${(((mdata.current-vMin)/vMin)*100).toFixed(1)}% above`, pos: Math.abs(mdata.current-vMin)<vMin*.01},
     {label:'Days since peak', val:`${Math.floor((Date.now()-new Date(gdata[gdata.length-1].date))/(86400000))} days`, pos:true},
   ].map(s=>`<div class="stat-card"><div class="sc-label">${s.label}</div><div class="sc-val ${s.pos?'pos':'neu'}">${s.val}</div></div>`).join('');
 
@@ -1053,7 +1040,7 @@ function updateProj() {
     const fvLastWeek = sharesLastWeek * peakPrice * Math.pow(1.105, yr);
     const diff = fv - fvLastWeek;
     if (diff >= 1) {
-      lastWeekEl.innerHTML = `&#128200; Buying this week's dip vs last week: <strong style="color:var(--green)">+${fmtMoney(diff)} more</strong> after ${yr} years`;
+      lastWeekEl.innerHTML = `Buying this week's dip vs last week: <strong style="color:var(--green)">+${fmtMoney(diff)} more</strong> after ${yr} years`;
       lastWeekEl.style.display = 'block';
     } else {
       lastWeekEl.style.display = 'none';
@@ -1137,7 +1124,6 @@ function toggleStar(symbol, name) {
   }
   saveStar();
   applyStarHero();
-  renderMarkets();
   renderStocks();
 }
 
@@ -1145,38 +1131,35 @@ function clearAllStars() {
   state.starred = [];
   saveStar();
   applyStarHero();
-  renderMarkets();
   renderStocks();
 }
 
 function applyStarHero() {
   const row = document.getElementById('heroSymRow');
-  if (!state.starred.length) {
-    if (row) row.innerHTML = `
-      <select class="hero-sym-sel" id="heroSymSel">
-        <option value="GSPC">S&amp;P 500</option>
-        <option value="DJI">Dow Jones</option>
-        <option value="IXIC">NASDAQ</option>
-      </select>
-      <span style="font-size:14px;color:var(--sub)">\u25BE</span>
-    `;
-    document.getElementById('heroSymSel')?.addEventListener('change', e => { state.hero.symbol = e.target.value; renderHero(); });
-    state.hero.symbol = 'GSPC';
-    renderHero();
-    return;
+  // Use starred items if any, otherwise fall back to default markets
+  const items = state.starred.length
+    ? state.starred
+    : DEFAULT_MARKETS.map(m => ({ symbol: m.symbol, name: m.name }));
+
+  const currentVal = state.hero.symbol;
+  const validSymbols = items.map(i => i.symbol);
+  // If current hero symbol no longer in list, reset to first
+  if (!validSymbols.includes(currentVal)) {
+    state.hero.symbol = items[0].symbol;
   }
 
-  // Build dropdown from starred items
-  const opts = state.starred.map(s => `<option value="${s.symbol}">${s.name}</option>`).join('');
+  const opts = items.map(s =>
+    `<option value="${s.symbol}"${s.symbol === state.hero.symbol ? ' selected' : ''}>${s.name}</option>`
+  ).join('');
+
   if (row) row.innerHTML = `
     <select class="hero-sym-sel" id="heroSymSel">${opts}</select>
     <span style="font-size:14px;color:var(--sub)">\u25BE</span>
   `;
-  document.getElementById('heroSymSel')?.addEventListener('change', e => { state.hero.symbol = e.target.value; renderHero(); });
-
-  if (!state.starred.some(s => s.symbol === state.hero.symbol)) {
-    state.hero.symbol = state.starred[0].symbol;
-  }
+  document.getElementById('heroSymSel')?.addEventListener('change', e => {
+    state.hero.symbol = e.target.value;
+    renderHero();
+  });
   renderHero();
 }
 
@@ -1260,7 +1243,6 @@ function bindEvents() {
 
 
   // Card grid events (delegated) - both grids are on the stocks tab now
-  document.getElementById('marketsGrid').addEventListener('click', handleCardClick.bind(null, false));
   document.getElementById('stocksGrid').addEventListener('click', handleCardClick.bind(null, true));
 
   // Close menus on outside click
@@ -1298,12 +1280,17 @@ function handleCardClick(inStocks, e) {
     const action = e.target.dataset.action;
     const msym = e.target.dataset.sym;
     if (action === 'remove') {
-      state.starred = state.starred.filter(s => s.symbol !== msym);
-      saveStar();
-      state.watchlist = state.watchlist.filter(w=>w.symbol!==msym);
-      saveWL();
-      applyStarHero();
-      renderStocks();
+      const isDefault = DEFAULT_MARKETS.some(m => m.symbol === msym);
+      if (isDefault) {
+        // Hide from home page markets section            } else {
+        // Remove from watchlist entirely
+        state.starred = state.starred.filter(s => s.symbol !== msym);
+        saveStar();
+        state.watchlist = state.watchlist.filter(w=>w.symbol!==msym);
+        saveWL();
+        applyStarHero();
+        renderStocks();
+      }
     } else if (action === 'refresh') {
       delete state.memCache[msym];
       Object.keys(state.graphCache).filter(k=>k.startsWith(msym)).forEach(k=>delete state.graphCache[k]);
@@ -1325,7 +1312,7 @@ function handleCardClick(inStocks, e) {
     const markets = isStocks ? state.watchlist : DEFAULT_MARKETS;
     const market = markets.find(m=>m.symbol===msym);
     if (!market) return;
-    const grid = document.getElementById(isStocks?'stocksGrid':'marketsGrid');
+    const grid = document.getElementById('stocksGrid');
     const cards = grid.querySelectorAll('.mcard');
     const idx = markets.indexOf(market);
     if (cards[idx]) {
@@ -1344,7 +1331,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   bindEvents();
   applyStarHero();
-  renderMarkets();
   renderStocks();
 });
 </script>
