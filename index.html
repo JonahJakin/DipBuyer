@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#F6F7F9">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -12,7 +12,7 @@
   <meta name="description" content="Upside-down market charts for long-term investors.">
   <title>DipBuyer</title>
   <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"%3E%3Crect width="128" height="128" rx="26" fill="%23111827"/%3E%3Cpath d="M28 78 48 58l18 14 34-38" fill="none" stroke="%238fb2ff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/%3E%3Ccircle cx="28" cy="78" r="6" fill="%2312b981"/%3E%3Ccircle cx="100" cy="34" r="6" fill="%238fb2ff"/%3E%3C/svg%3E'>
-  <link rel="apple-touch-icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180"%3E%3Crect width="180" height="180" rx="38" fill="%23111827"/%3E%3Cpath d="M40 110 68 82l25 20 48-54" fill="none" stroke="%238fb2ff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/%3E%3Ccircle cx="40" cy="110" r="9" fill="%2312b981"/%3E%3Ccircle cx="141" cy="48" r="9" fill="%238fb2ff"/%3E%3C/svg%3E'>
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
   <link rel="manifest" href='data:application/manifest+json,{"name":"DipBuyer","short_name":"DipBuyer","start_url":".","display":"standalone","background_color":"#F6F7F9","theme_color":"#F6F7F9","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 192 192\"%3E%3Crect width=\"192\" height=\"192\" rx=\"42\" fill=\"%23111827\"/%3E%3Cpath d=\"M43 118 73 88l27 21 51-58\" fill=\"none\" stroke=\"%238fb2ff\" stroke-width=\"15\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/%3E%3Ccircle cx=\"43\" cy=\"118\" r=\"10\" fill=\"%2312b981\"/%3E%3Ccircle cx=\"151\" cy=\"51\" r=\"10\" fill=\"%238fb2ff\"/%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml"},{"src":"data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"%3E%3Crect width=\"512\" height=\"512\" rx=\"112\" fill=\"%23111827\"/%3E%3Cpath d=\"M115 315 195 235l72 56 136-154\" fill=\"none\" stroke=\"%238fb2ff\" stroke-width=\"40\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/%3E%3Ccircle cx=\"115\" cy=\"315\" r=\"26\" fill=\"%2312b981\"/%3E%3Ccircle cx=\"403\" cy=\"137\" r=\"26\" fill=\"%238fb2ff\"/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml"}]}'>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&display=swap");
@@ -74,6 +74,7 @@
       font-family: var(--font);
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
+      touch-action: manipulation;
     }
 
     body {
@@ -83,6 +84,7 @@
     button,
     input {
       font: inherit;
+      touch-action: manipulation;
     }
 
     button {
@@ -94,6 +96,7 @@
       width: min(100%, 1180px);
       margin: 0 auto;
       padding: 22px;
+      touch-action: manipulation;
     }
 
     .topbar {
@@ -126,6 +129,17 @@
       align-items: center;
       gap: 8px;
       flex: 0 0 auto;
+    }
+
+    .mobile-saved-actions {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .is-hidden {
+      display: none !important;
     }
 
     .button,
@@ -398,6 +412,24 @@
       color: var(--text);
       padding: 0 11px;
       outline: none;
+    }
+
+    .money-control {
+      position: relative;
+    }
+
+    .money-prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--faint);
+      font-weight: 750;
+      pointer-events: none;
+    }
+
+    .money-control .money-input {
+      padding-left: 30px;
     }
 
     .money-input:focus,
@@ -805,19 +837,23 @@
       #heroChart {
         height: 320px;
       }
+
+      .top-actions {
+        display: none;
+      }
+
+      .mobile-saved-actions {
+        display: flex;
+      }
+
+      .mobile-saved-actions .button {
+        flex: 1;
+      }
     }
 
     @media (max-width: 430px) {
       .wordmark {
         font-size: 1.38rem;
-      }
-
-      .top-actions {
-        width: 100%;
-      }
-
-      .top-actions .button {
-        flex: 1;
       }
 
       .ticker,
@@ -844,7 +880,7 @@
         <button class="button" id="themeButton" type="button" onclick="toggleTheme()">Dark Mode</button>
       </div>
       <div class="top-actions">
-        <button class="button" id="resetButton" type="button" onclick="resetApp()">Reset</button>
+        <button class="button reset-action is-hidden" type="button" onclick="resetApp()">Reset</button>
         <button class="button primary" id="focusSearchButton" type="button">Add</button>
       </div>
     </header>
@@ -888,7 +924,10 @@
           <div class="calculator-grid">
             <div class="field">
               <label for="calcAmount">Amount to invest</label>
-              <input class="money-input" id="calcAmount" type="number" min="0" step="100" value="1000" inputmode="decimal">
+              <div class="money-control">
+                <span class="money-prefix">$</span>
+                <input class="money-input" id="calcAmount" type="number" min="0" step="100" value="1000" inputmode="decimal">
+              </div>
             </div>
             <div class="field">
               <label for="calcYears">Time horizon</label>
@@ -921,10 +960,14 @@
       </section>
 
       <aside class="side-stack">
-        <section class="panel side-panel" aria-label="Starred securities">
+        <section class="panel side-panel" aria-label="Saved securities">
           <div class="panel-head">
-            <h2>Starred</h2>
+            <h2>Saved</h2>
             <span id="watchCount">0</span>
+          </div>
+          <div class="mobile-saved-actions">
+            <button class="button reset-action is-hidden" type="button" onclick="resetApp()">Reset</button>
+            <button class="button primary mobile-add-action" type="button">Add</button>
           </div>
           <div class="watchlist" id="watchlist"></div>
         </section>
@@ -965,8 +1008,8 @@
           <span>Switch back to the regular price chart whenever you want a reality check.</span>
         </div>
         <div class="intro-point">
-          <strong>Starred home</strong>
-          <span>Add stocks, ETFs, indexes, and funds to make a focused dashboard.</span>
+          <strong>Saved home</strong>
+          <span>Save stocks, ETFs, indexes, and funds to make a focused dashboard.</span>
         </div>
       </div>
       <div class="intro-actions">
@@ -1140,6 +1183,8 @@
       calcReturn: document.getElementById("calcReturn"),
       watchlist: document.getElementById("watchlist"),
       watchCount: document.getElementById("watchCount"),
+      resetButtons: document.querySelectorAll(".reset-action"),
+      mobileAddButton: document.querySelector(".mobile-add-action"),
       browseList: document.getElementById("browseList"),
       resultCount: document.getElementById("resultCount"),
       searchInput: document.getElementById("searchInput"),
@@ -1147,7 +1192,6 @@
       themeButton: document.getElementById("themeButton"),
       introOverlay: document.getElementById("introOverlay"),
       introStartButton: document.getElementById("introStartButton"),
-      resetButton: document.getElementById("resetButton"),
       focusSearchButton: document.getElementById("focusSearchButton")
     };
 
@@ -1651,8 +1695,11 @@
     function renderWatchlist() {
       const items = state.watchlist.filter(isVerified).map(getSecurity);
       el.watchCount.textContent = String(items.length);
+      el.resetButtons.forEach((button) => {
+        button.classList.toggle("is-hidden", !state.watchlist.length);
+      });
       if (!items.length) {
-        el.watchlist.innerHTML = '<div class="empty">No starred symbols.</div>';
+        el.watchlist.innerHTML = '<div class="empty">No saved symbols.</div>';
         return;
       }
       el.watchlist.innerHTML = items.map((item) => {
@@ -1995,6 +2042,12 @@
       el.focusSearchButton.addEventListener("click", () => {
         el.searchInput.focus();
         el.searchInput.select();
+      });
+
+      el.mobileAddButton.addEventListener("click", () => {
+        el.searchInput.focus();
+        el.searchInput.select();
+        el.searchInput.scrollIntoView({ behavior: "smooth", block: "center" });
       });
 
       el.calcAmount.addEventListener("input", (event) => {
